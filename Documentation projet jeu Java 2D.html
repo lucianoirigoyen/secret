@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Projet - Idle Clicker RPG</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 15px;
+            background: #fff;
+            font-size: 11pt;
+        }
+        
+        .cover {
+            text-align: center;
+            padding: 80px 0;
+            page-break-after: always;
+        }
+        
+        .cover h1 {
+            font-size: 38px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .cover .subtitle {
+            font-size: 20px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .cover .info {
+            font-size: 14px;
+            color: #95a5a6;
+            margin-top: 50px;
+        }
+        
+        .section {
+            page-break-before: always;
+            padding: 15px 0;
+        }
+        
+        h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+        
+        h2 {
+            font-size: 18px;
+            color: #34495e;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-left: 3px solid #3498db;
+            padding-left: 12px;
+        }
+        
+        h3 {
+            font-size: 15px;
+            color: #34495e;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+        
+        p {
+            margin-bottom: 8px;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: #ecf0f1;
+            padding: 10px;
+            border-left: 3px solid #3498db;
+            margin: 12px 0;
+            font-size: 10pt;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 10pt;
+        }
+        
+        th {
+            background: #3498db;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 6px;
+            border: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin: 4px 0;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 10pt;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 12px 0;
+            font-size: 9pt;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 12px 0;
+        }
+        
+        .box {
+            background: #f8f9fa;
+            border: 1px solid #3498db;
+            padding: 12px;
+            border-radius: 5px;
+        }
+        
+        .box h3 {
+            color: #3498db;
+            margin-top: 0;
+            font-size: 14px;
+        }
+        
+        .rarity-common { color: #95a5a6; font-weight: bold; }
+        .rarity-rare { color: #3498db; font-weight: bold; }
+        .rarity-epic { color: #9b59b6; font-weight: bold; }
+        .rarity-legendary { color: #f39c12; font-weight: bold; }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .print-button:hover {
+            background: #2980b9;
+        }
+        
+        @media print {
+            .print-button {
+                display: none;
+            }
+            body {
+                background: white;
+            }
+        }
+        
+        .architecture {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 12px 0;
+        }
+        
+        .layer {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-left: 4px solid #3498db;
+            font-size: 10pt;
+        }
+        
+        .compact-list {
+            columns: 2;
+            column-gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">📄 Générer PDF</button>
+
+    <!-- COUVERTURE -->
+    <div class="cover">
+        <h1>Idle Clicker RPG</h1>
+        <div class="subtitle">Documentation Technique Synthétique</div>
+        <div class="info">
+            <p>Projet Java - Développement de Jeu 2D</p>
+            <p>Durée : 3 semaines | Novembre 2025</p>
+        </div>
+    </div>
+
+    <!-- SECTION 1 -->
+    <div class="section">
+        <h1>1. Vue d'Ensemble du Projet</h1>
+        
+        <p><strong>Idle Clicker RPG</strong> est un jeu 2D en Java combinant mécaniques clicker et RPG. Le joueur combat des monstres par clics, collecte de l'or, achète des améliorations aléatoires et recrute des familiers pour devenir plus puissant.</p>
+        
+        <div class="two-column">
+            <div class="box">
+                <h3>Concept Central</h3>
+                <ul>
+                    <li>Die & retry : mourir pour progresser</li>
+                    <li>5 monstres → 1 boss (cycle répété)</li>
+                    <li>Améliorations permanentes</li>
+                    <li>Collection de familiers</li>
+                </ul>
+            </div>
+            
+            <div class="box">
+                <h3>Technologies</h3>
+                <ul>
+                    <li>Java 11+ (JDK standard uniquement)</li>
+                    <li>Swing pour l'interface</li>
+                    <li>Serialization pour sauvegardes</li>
+                    <li>Pas de dépendances externes</li>
+                </ul>
+            </div>
+        </div>
+        
+        <h2>Gameplay Principal</h2>
+        
+        <table>
+            <tr>
+                <th>Phase</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><strong>Combat</strong></td>
+                <td>Cliquer sur monstres → infliger des dégâts → tuer → gagner gold</td>
+            </tr>
+            <tr>
+                <td><strong>Boss</strong></td>
+                <td>Tous les 5 monstres : boss avec 3× HP, DPS continus, esquive (a équilibrer), bouclier (pareil)</td>
+            </tr>
+            <tr>
+                <td><strong>Mort</strong></td>
+                <td>Retour monstre 1 de la phase, conservation gold/upgrades/familiers</td>
+            </tr>
+            <tr>
+                <td><strong>Shop</strong></td>
+                <td>Acheter upgrades aléatoires (50g) ou œufs de familiers (200g)</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section">
+        <h1>2. Systèmes de Jeu</h1>
+        
+        <h2>Système de Combat</h2>
+        
+        <div class="code-block">
+Dégâts finaux = (Base + Upgrades + Familiers) × Crit Multiplier (si crit)
+Chance crit = 5% base + upgrades + familiers
+Boss esquive : 15-20% d'annuler l'attaque
+Boss bouclier : 5-8% d'activer 3 sec invulnérabilité
+        </div>
+        
+        <table>
+            <tr>
+                <th>Stat Joueur</th>
+                <th>Base</th>
+                <th>Sources amélioration</th>
+            </tr>
+            <tr>
+                <td>HP Max</td>
+                <td>100</td>
+                <td>Upgrades shop (+10), Familiers</td>
+            </tr>
+            <tr>
+                <td>Dégâts/clic</td>
+                <td>10</td>
+                <td>Upgrades shop (+2), Familiers</td>
+            </tr>
+            <tr>
+                <td>Taux critique</td>
+                <td>5%</td>
+                <td>Upgrades shop (+5%), Familiers</td>
+            </tr>
+            <tr>
+                <td>Mult. critique</td>
+                <td>150%</td>
+                <td>Upgrades shop (+20%), Familiers</td>
+            </tr>
+        </table>
+        
+        <h2>Système de Familiers</h2>
+        
+        <p>Créatures collectionnables qui boostent les stats. 2 slots équipables simultanément.</p>
+        
+        <table>
+            <tr>
+                <th>Rareté</th>
+                <th>Prob.</th>
+                <th>Bonus typique</th>
+            </tr>
+            <tr>
+                <td class="rarity-common">Commun</td>
+                <td>50%</td>
+                <td>+5 HP, +1 dégât, +2% crit</td>
+            </tr>
+            <tr>
+                <td class="rarity-rare">Rare</td>
+                <td>30%</td>
+                <td>+15 HP, +3 dégâts, +5% crit</td>
+            </tr>
+            <tr>
+                <td class="rarity-epic">Épique</td>
+                <td>15%</td>
+                <td>+30 HP, +6 dégâts, +10% crit</td>
+            </tr>
+            <tr>
+                <td class="rarity-legendary">Légendaire</td>
+                <td>5%</td>
+                <td>+50 HP, +10 dégâts, +15% crit, effets spéciaux</td>
+            </tr>
+        </table>
+        
+        <h2>Shop et Progression</h2>
+        
+        <div class="two-column">
+            <div class="box">
+                <h3>Améliorations (50g base)</h3>
+                <ul>
+                    <li>Vie Max +10 HP (30%)</li>
+                    <li>Dégâts +2 (30%)</li>
+                    <li>Taux crit +5% (25%)</li>
+                    <li>Dégâts crit +20% (15%)</li>
+                </ul>
+            </div>
+            
+            <div class="box">
+                <h3>Autoclicker</h3>
+                <p>Débloqué après 5 boss vaincus (total)</p>
+                <ul>
+                    <li>Clique automatiquement</li>
+                    <li>Toggle on/off</li>
+                    <li>~3 clics/seconde</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3 - UML -->
+    <div class="section">
+        <h1>3. Architecture et Diagramme UML</h1>
+        
+        <p>Architecture <strong>MVC-like</strong> avec séparation claire : Entities (Model), Systems (Controller), UI (View).</p>
+        
+        <div class="architecture">
+            <div class="layer">
+                <strong>🎮 Couche Principale :</strong> Main, GamePanel (orchestration), GameState (enum), GameData (sauvegarde)
+            </div>
+            
+            <div class="layer">
+                <strong>📦 Couche Entités :</strong> Player, Monster, Boss (extends Monster), Familiar, Rarity (enum)
+            </div>
+            
+            <div class="layer">
+                <strong>⚙️ Couche Systèmes :</strong> CombatSystem, ShopSystem, UpgradeSystem, FamiliarSystem, BossAbilitySystem, AutoClickerSystem
+            </div>
+            
+            <div class="layer">
+                <strong>🖥️ Couche UI :</strong> CombatPanel, ShopPanel, StatsPanel, FamiliarPanel
+            </div>
+        </div>
+        
+        <h2>Classes Principales</h2>
+        
+        <table>
+            <tr>
+                <th>Classe</th>
+                <th>Responsabilités clés</th>
+            </tr>
+            <tr>
+                <td><strong>GamePanel</strong></td>
+                <td>Game loop (60 FPS), coordination des systèmes, gestion des états, delta time</td>
+            </tr>
+            <tr>
+                <td><strong>Player</strong></td>
+                <td>Stats (HP, dégâts, crit), gold, familiers équipés[2], collection complète</td>
+            </tr>
+            <tr>
+                <td><strong>Boss</strong></td>
+                <td>HP ×3, DPS, esquive, bouclier (timer, cooldown, activation aléatoire)</td>
+            </tr>
+            <tr>
+                <td><strong>CombatSystem</strong></td>
+                <td>processCombatClick() → calcul dégâts, gestion esquive/bouclier, retourne CombatResult</td>
+            </tr>
+            <tr>
+                <td><strong>FamiliarSystem</strong></td>
+                <td>hatchEgg() → tirage pondéré de rareté, sélection familier aléatoire</td>
+            </tr>
+        </table>
+        
+        <h2>Relations Importantes</h2>
+        
+        <ul>
+            <li><strong>Boss extends Monster</strong> : Héritage avec capacités supplémentaires</li>
+            <li><strong>Player HAS-A Familiar[2]</strong> : Composition pour équipement (2 slots)</li>
+            <li><strong>Player HAS-A List&lt;Familiar&gt;</strong> : Collection complète</li>
+            <li><strong>GamePanel USES Systems</strong> : Composition, pas d'héritage</li>
+            <li><strong>Systems sont stateless</strong> : Reçoivent entités en params, retournent résultats</li>
+        </ul>
+        
+        <div class="highlight">
+            <strong>Principe clé :</strong> Les systèmes ne stockent jamais d'état de jeu. Toutes les données sont dans les entités, ce qui facilite la sauvegarde (il suffit de sérialiser Player et GameData).
+        </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="section">
+        <h1>4. Spécifications Techniques</h1>
+
+        <p><strong>Classes sérialisables :</strong> Player, Familiar, GameData | <strong>Non sérialisées :</strong> Monster/Boss (recréés), Systems (sans état), Panels UI</p>
+        
+        <p><strong>Moments de sauvegarde :</strong> Après achat shop, équipement familier, mort joueur, victoire boss, fermeture jeu</p>
+        
+        <h2>Balancing a faire evoluer</h2>
+        
+        <table>
+            <tr>
+                <th>Niveau</th>
+                <th>Monstre HP</th>
+                <th>Boss HP</th>
+                <th>Boss DPS</th>
+                <th>Gold Boss</th>
+            </tr>
+            <tr><td>1</td><td>50</td><td>150</td><td>5</td><td>100</td></tr>
+            <tr><td>2</td><td>75</td><td>225</td><td>7</td><td>150</td></tr>
+            <tr><td>3</td><td>100</td><td>300</td><td>9</td><td>200</td></tr>
+            <tr><td>5</td><td>150</td><td>450</td><td>13</td><td>300</td></tr>
+        </table>
+        
+        <div class="highlight">
+            <strong>Objectif design :</strong> Le joueur doit mourir au Boss 1 sans upgrades (encourage farming), puis progresser avec 3-4 upgrades achetés.
+        </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="section">
+        <h1>5. Planning de Développement (3 Semaines)</h1>
+        
+        <h2>Semaine 1 : Fondations</h2>
+        
+        <table>
+            <tr>
+                <th>Jour</th>
+                <th>Tâches</th>
+            </tr>
+            <tr>
+                <td><strong>1</strong></td>
+                <td>Setup projet, structure dossiers, classes vides, fenêtre JFrame</td>
+            </tr>
+            <tr>
+                <td><strong>2</strong></td>
+                <td>Game loop (Timer), Player/Monster basiques, affichage rectangles + texte HP/Gold</td>
+            </tr>
+            <tr>
+                <td><strong>3</strong></td>
+                <td>Clic détection, CombatSystem, calcul dégâts, mort monstre → spawn suivant</td>
+            </tr>
+            <tr>
+                <td><strong>4</strong></td>
+                <td>Boss (extends Monster), DPS au joueur, cycle 5 monstres → 1 boss, mort joueur → reset</td>
+            </tr>
+            <tr>
+                <td><strong>5</strong></td>
+                <td>Système critiques, nombres dégâts flottants, différenciation visuelle critiques</td>
+            </tr>
+        </table>
+        
+        <p><strong>✅ Livrable :</strong> Jeu jouable avec combat fonctionnel, mort, retry. Gold farmé mais non utilisable.</p>
+        
+        <h2>Semaine 2 : Gameplay Complet</h2>
+        
+        <table>
+            <tr>
+                <th>Jour</th>
+                <th>Tâches</th>
+            </tr>
+            <tr>
+                <td><strong>6</strong></td>
+                <td>ShopPanel, bouton acheter upgrade, tirage aléatoire pondéré, application upgrades</td>
+            </tr>
+            <tr>
+                <td><strong>7</strong></td>
+                <td>Classe Familiar + Rarity enum, FamiliarSystem.hatchEgg(), templates familiers (3/rareté min)</td>
+            </tr>
+            <tr>
+                <td><strong>8</strong></td>
+                <td>Bouton acheter œuf, équipement familiers (2 slots), FamiliarPanel collection, calcul stats totales</td>
+            </tr>
+            <tr>
+                <td><strong>9</strong></td>
+                <td>Boss.tryDodge() + feedback "ESQUIVÉ", système bouclier (timer/cooldown), indicateur visuel</td>
+            </tr>
+            <tr>
+                <td><strong>10</strong></td>
+                <td>GameData Serializable, save()/load(), sauvegarde auto, compteur boss vaincus</td>
+            </tr>
+        </table>
+        
+        <p><strong>✅ Livrable :</strong> Jeu complet avec toutes mécaniques. Upgrades/familiers/boss abilities/sauvegarde fonctionnels.</p>
+        
+        <h2>Semaine 3 : Polish & Finitions</h2>
+        
+        <table>
+            <tr>
+                <th>Jour</th>
+                <th>Tâches</th>
+            </tr>
+            <tr>
+                <td><strong>11</strong></td>
+                <td>Sprites pour joueur/monstres/familiers, icônes boutons, amélioration UI (couleurs/fonts)</td>
+            </tr>
+            <tr>
+                <td><strong>12</strong></td>
+                <td>Animations : cadeau, œuf, attaque, bouclier boss, esquive</td>
+            </tr>
+            <tr>
+                <td><strong>13</strong></td>
+                <td>AutoClickerSystem, unlock après 5 boss, toggle on/off, améliorer dégâts flottants</td>
+            </tr>
+            <tr>
+                <td><strong>14</strong></td>
+                <td>Testing & balancing : HP/prix/probas, vérifier mort boss 1, progression avec upgrades</td>
+            </tr>
+            <tr>
+                <td><strong>15</strong></td>
+                <td>Bug fixes, Javadoc, README.md, démo préparation, test complet début→fin</td>
+            </tr>
+        </table>
+        
+        <p><strong>✅ Livrable :</strong> Jeu poli, équilibré, documenté, prêt à présenter.</p>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div class="section">
+        <h1>6. Checklist</h1>
+        
+        <h2>Checklist Finale</h2>
+        
+        <div class="two-column">
+            <div>
+                <h3>Gameplay</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li>☐ Combat fonctionnel (clics)</li>
+                    <li>☐ 5 monstres + 1 boss/cycle</li>
+                    <li>☐ Boss : DPS, esquive, bouclier</li>
+                    <li>☐ Die & retry</li>
+                    <li>☐ Autoclicker (5 boss)</li>
+                </ul>
+                
+                <h3>Technique</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li>☐ Sauvegarde/chargement OK</li>
+                    <li>☐ Pas de bugs critiques</li>
+                    <li>☐ Code commenté</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3>Progression</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li>☐ Shop upgrades aléatoires</li>
+                    <li>☐ Œufs familiers (4 raretés)</li>
+                    <li>☐ Équipement (2 slots)</li>
+                    <li>☐ Stats cumulées correctes</li>
+                </ul>
+                
+                <h3>UI/UX</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li>☐ Interface claire</li>
+                    <li>☐ Feedback visuels</li>
+                    <li>☐ Animations basiques</li>
+                </ul>
+            </div>
+        </div>
+        
+        <h2>Mémos</h2>
+        
+        <div class="highlight">
+            <strong>⚠️ À Éviter :</strong>
+            <ul style="margin: 5px 0;">
+                <li>Sur-engineer dès le début → Commencer simple (rectangles), complexifier ensuite</li>
+                <li>Négliger le balancing → Tester régulièrement, ajuster valeurs</li>
+                <li>Coder sans architecture → Respecter Entities/Systems/UI dès le départ</li>
+                <li>Oublier la sauvegarde → Implémenter tôt, tester souvent</li>
+            </ul>
+        </div>
+        
+        <div class="highlight">
+            <strong>✅ Bonnes Pratiques :</strong>
+            <ul style="margin: 5px 0;">
+                <li>Commits Git réguliers (chaque fonctionnalité)</li>
+                <li>Jouer au jeu quotidiennement, noter bugs</li>
+                <li>Constants pour valeurs (pas de magic numbers)</li>
+                <li>Faire tester par d'autres, noter retours</li>
+            </ul>
+        </div>
+        
+        <h2>Sources</h2>
+        
+        <div class="compact-list">
+            <ul>
+                <li><strong>Sprites gratuits :</strong> https://www.spriters-resource.com/ (Merci Nico)</li>
+                <li><strong>Sons gratuits :</strong> https://freesound.org/</li>
+            </ul>
+        </div>
+ 
+    <!-- FOOTER -->
+    <div style="page-break-before: always; text-align: center; padding: 80px 0; color: #95a5a6;">
+        <p style="margin-top: 40px;">
+            Documentation Idle Clicker RPG - Novembre 2025<br>
+            <small>Version synthétique pour référence rapide</small>
+        </p>
+    </div>
+
+</body>
+</html>
