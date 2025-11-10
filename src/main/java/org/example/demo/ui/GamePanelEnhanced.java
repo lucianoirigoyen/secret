@@ -415,7 +415,8 @@ public class GamePanelEnhanced extends StackPane {
         Button buyButton = createStyledButton("Acheter", "#e67e22", "#d35400");
         buyButton.setMaxWidth(Double.MAX_VALUE);
         buyButton.setDisable(!gameManager.getShopSystem().canAffordUpgrade());
-        buyButton.setOnAction(e -> handleUpgradePurchase(card));
+        // FIX: Don't pass card reference, recreate cards after purchase
+        buyButton.setOnAction(e -> handleUpgradePurchase());
 
         card.getChildren().addAll(cardTitle, cardDesc, costLabel, buyButton);
         upgradeCards.getChildren().add(card);
@@ -448,7 +449,8 @@ public class GamePanelEnhanced extends StackPane {
         Button buyButton = createStyledButton("Acheter", "#c0392b", "#a93226");
         buyButton.setMaxWidth(Double.MAX_VALUE);
         buyButton.setDisable(!gameManager.getShopSystem().canAffordEgg());
-        buyButton.setOnAction(e -> handleEggPurchase(card));
+        // FIX: Don't pass card reference, recreate cards after purchase
+        buyButton.setOnAction(e -> handleEggPurchase());
 
         card.getChildren().addAll(cardTitle, cardDesc, costLabel, buyButton);
         familiarCards.getChildren().add(card);
@@ -609,10 +611,29 @@ public class GamePanelEnhanced extends StackPane {
             animateHit(result.isCrit);
             showDamageNumber(result.damage, result.isCrit);
 
-            // Particle effects
-            double centerX = monsterContainer.getLayoutX() + monsterContainer.getWidth() / 2;
-            double centerY = monsterContainer.getLayoutY() + monsterContainer.getHeight() / 2;
+            // NEW: Show companion attack if present
+            if (result.companionDamage > 0 && result.companionAttack != null) {
+                showCompanionAttack(result.companionAttack, result.companionDamage);
+            }
 
+            // NEW: Show companion evolution
+            if (result.companionEvolved) {
+                showFeedbackText("🎉 ÉVOLUTION! 🎉", Color.web("#FFD700"));
+                particleSystem.createExplosion(400, 300, Color.web("#FFD700"));
+            }
+
+            // NEW: Show AoE effect
+            if (result.isAoE) {
+                showFeedbackText("💥 ZONE! 💥", Color.web("#FF4500"));
+                particleSystem.createExplosion(400, 300, Color.web("#FF4500"));
+            }
+
+            // NEW: Show status effect
+            if (result.statusEffect != null) {
+                showFeedbackText(result.statusEffect.getName(), Color.web("#9370DB"));
+            }
+
+            // Particle effects
             if (result.isCrit) {
                 particleSystem.createSparkles(400, 300);
                 createScreenShake(8);
@@ -628,6 +649,42 @@ public class GamePanelEnhanced extends StackPane {
 
             updateUI();
         }
+    }
+
+    private void showCompanionAttack(String attackDescription, int damage) {
+        Label companionLabel = new Label(attackDescription);
+        companionLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+        companionLabel.setTextFill(Color.web("#00CED1"));
+        companionLabel.setStyle("-fx-effect: dropshadow(gaussian, black, 3, 0.6, 0, 0);");
+        damageNumbersContainer.getChildren().add(companionLabel);
+
+        // Show companion damage separately
+        Label companionDmg = new Label("+" + damage);
+        companionDmg.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+        companionDmg.setTextFill(Color.web("#7FFFD4"));
+        damageNumbersContainer.getChildren().add(companionDmg);
+
+        // Animate both
+        TranslateTransition move = new TranslateTransition(Duration.millis(1000), companionLabel);
+        move.setByY(-80);
+        move.setByX(-50);
+        FadeTransition fade = new FadeTransition(Duration.millis(1000), companionLabel);
+        fade.setFromValue(1.0);
+        fade.setToValue(0.0);
+
+        TranslateTransition move2 = new TranslateTransition(Duration.millis(1000), companionDmg);
+        move2.setByY(-60);
+        move2.setByX(-30);
+        FadeTransition fade2 = new FadeTransition(Duration.millis(1000), companionDmg);
+        fade2.setFromValue(1.0);
+        fade2.setToValue(0.0);
+
+        ParallelTransition parallel = new ParallelTransition(move, fade, move2, fade2);
+        parallel.setOnFinished(e -> {
+            damageNumbersContainer.getChildren().remove(companionLabel);
+            damageNumbersContainer.getChildren().remove(companionDmg);
+        });
+        parallel.play();
     }
 
     private void updateComboDisplay() {
@@ -773,14 +830,9 @@ public class GamePanelEnhanced extends StackPane {
         }
     }
 
-    private void handleUpgradePurchase(VBox card) {
+    private void handleUpgradePurchase() {
         UpgradeSystem.UpgradeType upgrade = gameManager.getShopSystem().purchaseUpgrade();
         if (upgrade != null) {
-            // Success animation
-            RotateTransition rotate = new RotateTransition(Duration.millis(500), card);
-            rotate.setByAngle(360);
-            rotate.play();
-
             // Show success feedback
             showFeedbackText("+" + upgrade.getDisplayName(), Color.LIME);
 
@@ -789,30 +841,18 @@ public class GamePanelEnhanced extends StackPane {
 
             gameManager.saveGame();
             updateUI();
-            updateUpgradeCards();
-        } else {
-            // Shake card to indicate failure
-            TranslateTransition shake = new TranslateTransition(Duration.millis(100), card);
-            shake.setFromX(0);
-            shake.setByX(10);
-            shake.setCycleCount(4);
-            shake.setAutoReverse(true);
-            shake.play();
 
+            // FIX: Update cards AFTER purchase to refresh buttons
+            updateUpgradeCards();
+            updateFamiliarCards();
+        } else {
             showFeedbackText("Pas assez d'or !", Color.RED);
         }
     }
 
-    private void handleEggPurchase(VBox card) {
+    private void handleEggPurchase() {
         Familiar familiar = gameManager.getShopSystem().purchaseEgg();
         if (familiar != null) {
-            // Egg crack animation
-            RotateTransition rotate = new RotateTransition(Duration.millis(100), card);
-            rotate.setByAngle(10);
-            rotate.setAutoReverse(true);
-            rotate.setCycleCount(8);
-            rotate.play();
-
             // Show familiar obtained
             showFeedbackText(familiar.getName() + "!", Color.web(familiar.getRarity().getColorHex()));
 
@@ -821,16 +861,12 @@ public class GamePanelEnhanced extends StackPane {
 
             gameManager.saveGame();
             updateUI();
+
+            // FIX: Update cards AFTER purchase to refresh buttons
+            updateUpgradeCards();
             updateFamiliarCards();
             updateFamiliarDisplay();
         } else {
-            TranslateTransition shake = new TranslateTransition(Duration.millis(100), card);
-            shake.setFromX(0);
-            shake.setByX(10);
-            shake.setCycleCount(4);
-            shake.setAutoReverse(true);
-            shake.play();
-
             showFeedbackText("Pas assez d'or !", Color.RED);
         }
     }

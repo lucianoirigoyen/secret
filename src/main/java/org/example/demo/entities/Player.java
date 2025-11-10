@@ -243,9 +243,20 @@ public class Player implements Serializable {
     public Familiar getEquippedFamiliar1() { return equippedFamiliar1; }
     public Familiar getEquippedFamiliar2() { return equippedFamiliar2; }
 
-    // NEW: Companion and Crit system getters
-    public Companion getCompanion() { return companion; }
-    public CritSystem getCritSystem() { return critSystem; }
+    // NEW: Companion and Crit system getters (with null safety for old saves)
+    public Companion getCompanion() {
+        if (companion == null) {
+            companion = new Companion();
+        }
+        return companion;
+    }
+
+    public CritSystem getCritSystem() {
+        if (critSystem == null) {
+            critSystem = new CritSystem();
+        }
+        return critSystem;
+    }
 
     // Setters (pour sauvegarde)
     public void setCurrentHp(int hp) { this.currentHp = hp; }
