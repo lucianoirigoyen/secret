@@ -153,9 +153,6 @@ public class GamePanelEnhanced extends StackPane {
         critRateLabel = createEnhancedStatLabel("✨ Crit: 5%", Color.web("#9b59b6"));
         bossesKilledLabel = createEnhancedStatLabel("👑 Boss: 0", Color.web("#f39c12"));
 
-        // Add pulsing effect to gold label
-        addPulseAnimation(goldLabel);
-
         statsBox.getChildren().addAll(hpBox, goldLabel, clickDamageLabel, critRateLabel, bossesKilledLabel);
         return statsBox;
     }
@@ -233,8 +230,10 @@ public class GamePanelEnhanced extends StackPane {
                 new Stop(0, Color.web("#e74c3c", 0.3)),
                 new Stop(1, Color.TRANSPARENT)));
 
-        // Main monster body (layered shapes)
+        // Main monster body (layered shapes) - centered
         Rectangle body = new Rectangle(150, 150);
+        body.setX(-75); // Center the rectangle
+        body.setY(-75);
         body.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
                 new Stop(0, Color.web("#c0392b")),
                 new Stop(1, Color.web("#e74c3c"))));
@@ -257,26 +256,26 @@ public class GamePanelEnhanced extends StackPane {
         innerShadow.setInput(outerShadow);
         body.setEffect(innerShadow);
 
-        // Eyes
+        // Eyes - properly centered on the monster face
         Circle leftEye = new Circle(15);
         leftEye.setFill(Color.web("#ecf0f1"));
-        leftEye.setCenterX(-30);
-        leftEye.setCenterY(-20);
+        leftEye.setCenterX(-25);
+        leftEye.setCenterY(-15);
 
         Circle rightEye = new Circle(15);
         rightEye.setFill(Color.web("#ecf0f1"));
-        rightEye.setCenterX(30);
-        rightEye.setCenterY(-20);
+        rightEye.setCenterX(25);
+        rightEye.setCenterY(-15);
 
         Circle leftPupil = new Circle(8);
         leftPupil.setFill(Color.web("#2c3e50"));
-        leftPupil.setCenterX(-30);
-        leftPupil.setCenterY(-20);
+        leftPupil.setCenterX(-25);
+        leftPupil.setCenterY(-15);
 
         Circle rightPupil = new Circle(8);
         rightPupil.setFill(Color.web("#2c3e50"));
-        rightPupil.setCenterX(30);
-        rightPupil.setCenterY(-20);
+        rightPupil.setCenterX(25);
+        rightPupil.setCenterY(-15);
 
         monsterGroup.getChildren().addAll(outerGlow, body, leftEye, rightEye, leftPupil, rightPupil);
 
@@ -350,10 +349,6 @@ public class GamePanelEnhanced extends StackPane {
                 "-fx-border-color: rgba(255, 255, 255, 0.3); " +
                 "-fx-border-width: 2; " +
                 "-fx-border-radius: 15;");
-
-        // Add blur effect
-        BoxBlur blur = new BoxBlur(3, 3, 1);
-        shop.setEffect(blur);
 
         Label shopTitle = new Label("🎁 SHOP MAGIQUE");
         shopTitle.setFont(Font.font("Arial", FontWeight.BOLD, 24));
