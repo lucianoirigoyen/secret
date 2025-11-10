@@ -1,5 +1,7 @@
 package org.example.demo.entities;
 
+import org.example.demo.systems.CritSystem;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,12 @@ public class Player implements Serializable {
     private Familiar equippedFamiliar1;
     private Familiar equippedFamiliar2;
 
+    // NEW: Companion system (evolutionary pet)
+    private Companion companion;
+
+    // NEW: Enhanced crit system (100% + post bonuses)
+    private CritSystem critSystem;
+
     public Player() {
         this.maxHp = BASE_HP;
         this.currentHp = BASE_HP;
@@ -43,6 +51,10 @@ public class Player implements Serializable {
         this.familiarCollection = new ArrayList<>();
         this.equippedFamiliar1 = null;
         this.equippedFamiliar2 = null;
+
+        // Initialize new systems
+        this.companion = new Companion();
+        this.critSystem = new CritSystem();
     }
 
     /**
@@ -197,7 +209,20 @@ public class Player implements Serializable {
     }
 
     public void upgradeCritRate(double amount) {
-        critRate = Math.min(100.0, critRate + amount); // Cap à 100%
+        // NO MORE CAP! Can go to 100%
+        critRate += amount;
+
+        // If we exceeded 100%, apply post-crit bonuses
+        if (critRate > 100.0) {
+            double excess = critRate - 100.0;
+            critRate = 100.0;
+
+            // Convert excess into post-100% bonuses
+            int bonusPoints = (int) (excess / 5.0); // Every 5% excess = 1 bonus point
+            for (int i = 0; i < bonusPoints; i++) {
+                critSystem.applyPostCritBonus();
+            }
+        }
     }
 
     public void upgradeCritMultiplier(double amount) {
@@ -217,6 +242,10 @@ public class Player implements Serializable {
     public List<Familiar> getFamiliarCollection() { return familiarCollection; }
     public Familiar getEquippedFamiliar1() { return equippedFamiliar1; }
     public Familiar getEquippedFamiliar2() { return equippedFamiliar2; }
+
+    // NEW: Companion and Crit system getters
+    public Companion getCompanion() { return companion; }
+    public CritSystem getCritSystem() { return critSystem; }
 
     // Setters (pour sauvegarde)
     public void setCurrentHp(int hp) { this.currentHp = hp; }
