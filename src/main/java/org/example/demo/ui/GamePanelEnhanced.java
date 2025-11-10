@@ -1,6 +1,7 @@
 package org.example.demo.ui;
 
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -10,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
@@ -61,6 +63,10 @@ public class GamePanelEnhanced extends StackPane {
 
     // UI Components - Familiars Display
     private HBox familiarDisplayBox;
+
+    // UI Components - Companion Display
+    private StackPane companionDisplayBox;
+    private StackPane companionIconNode; // Reference to the companion icon for animations
 
     // Visual Effects
     private ParticleSystem particleSystem;
@@ -329,12 +335,17 @@ public class GamePanelEnhanced extends StackPane {
         shopButton = createStyledButton("🛒 Ouvrir le Shop", "#3498db", "#2980b9");
         shopButton.setOnAction(e -> toggleShop());
 
+        // Companion display
+        companionDisplayBox = new StackPane();
+        companionDisplayBox.setAlignment(Pos.CENTER);
+        updateCompanionDisplay();
+
         // Familiar display
         familiarDisplayBox = new HBox(10);
         familiarDisplayBox.setAlignment(Pos.CENTER);
         updateFamiliarDisplay();
 
-        actionBox.getChildren().addAll(shopButton, familiarDisplayBox);
+        actionBox.getChildren().addAll(shopButton, companionDisplayBox, familiarDisplayBox);
         return actionBox;
     }
 
@@ -560,15 +571,15 @@ public class GamePanelEnhanced extends StackPane {
 
     private StackPane createFamiliarIcon(Familiar familiar) {
         StackPane icon = new StackPane();
-        icon.setPrefSize(50, 50);
+        icon.setPrefSize(60, 60);
 
-        Circle circle = new Circle(25);
+        Circle circle = new Circle(28);
         circle.setFill(Color.web(familiar.getRarity().getColorHex()));
         circle.setStroke(Color.WHITE);
         circle.setStrokeWidth(2);
 
-        Label emoji = new Label("🐾");
-        emoji.setFont(Font.font(24));
+        // Créer le sprite Pixel Art pour le familier
+        Canvas sprite = PixelArtSprite.createFamiliarSprite(familiar.getName());
 
         // Glow effect based on rarity
         DropShadow glow = new DropShadow();
@@ -579,14 +590,95 @@ public class GamePanelEnhanced extends StackPane {
         // Pulsing animation
         addPulseAnimation(icon);
 
-        icon.getChildren().addAll(circle, emoji);
+        icon.getChildren().addAll(circle, sprite);
 
-        // Tooltip on hover
-        icon.setOnMouseEntered(e -> {
-            // Could show familiar details
-        });
+        // Tooltip on hover showing familiar details
+        Tooltip tooltip = new Tooltip(familiar.getDescription());
+        tooltip.setStyle("-fx-font-size: 12px; -fx-background-color: rgba(0,0,0,0.9); -fx-text-fill: white;");
+        Tooltip.install(icon, tooltip);
 
         return icon;
+    }
+
+    private void updateCompanionDisplay() {
+        companionDisplayBox.getChildren().clear();
+
+        Player player = gameManager.getPlayer();
+        org.example.demo.entities.Companion companion = player.getCompanion();
+
+        if (companion != null) {
+            companionDisplayBox.getChildren().add(createCompanionIcon(companion));
+        }
+    }
+
+    private VBox createCompanionIcon(org.example.demo.entities.Companion companion) {
+        VBox container = new VBox(5);
+        container.setAlignment(Pos.CENTER);
+
+        // Icône du compagnon avec sprite
+        companionIconNode = new StackPane();
+        companionIconNode.setPrefSize(70, 70);
+
+        // Cercle de fond avec couleur selon le stade
+        Circle circle = new Circle(35);
+        Color stageColor = getCompanionStageColor(companion.getCurrentStage().name());
+        circle.setFill(stageColor);
+        circle.setStroke(Color.WHITE);
+        circle.setStrokeWidth(3);
+
+        // Créer le sprite Pixel Art pour le compagnon
+        String companionType = companion.getStarterType() != null ?
+                              companion.getStarterType().name() : "EGG";
+        Canvas sprite = PixelArtSprite.createCompanionSprite(companionType, companion.getCurrentStage().name());
+
+        // Effet de glow
+        DropShadow glow = new DropShadow();
+        glow.setColor(stageColor);
+        glow.setRadius(20);
+        companionIconNode.setEffect(glow);
+
+        // Animation de pulsation
+        addPulseAnimation(companionIconNode);
+
+        companionIconNode.getChildren().addAll(circle, sprite);
+
+        // Label du nom et stade
+        Label nameLabel = new Label(companion.getCurrentName());
+        nameLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        nameLabel.setTextFill(Color.WHITE);
+
+        // Label de progression
+        Label progressLabel = new Label(companion.getProgressText());
+        progressLabel.setFont(Font.font("Arial", 11));
+        progressLabel.setTextFill(Color.web("#FFD700"));
+
+        // Tooltip avec détails
+        String tooltipText = String.format("%s\nStade: %s\nDégâts: %d\n%s",
+                companion.getCurrentName(),
+                companion.getCurrentStage().getDisplayName(),
+                companion.getAttackDamage(),
+                companion.getProgressText());
+        Tooltip tooltip = new Tooltip(tooltipText);
+        tooltip.setStyle("-fx-font-size: 12px; -fx-background-color: rgba(0,0,0,0.9); -fx-text-fill: white;");
+        Tooltip.install(companionIconNode, tooltip);
+
+        container.getChildren().addAll(companionIconNode, nameLabel, progressLabel);
+        return container;
+    }
+
+    private Color getCompanionStageColor(String stage) {
+        switch (stage) {
+            case "EGG":
+                return Color.web("#E0E0E0"); // Gris clair
+            case "STARTER":
+                return Color.web("#4CAF50"); // Vert
+            case "EVOLUTION_1":
+                return Color.web("#2196F3"); // Bleu
+            case "EVOLUTION_2":
+                return Color.web("#FF9800"); // Orange/doré
+            default:
+                return Color.GRAY;
+        }
     }
 
     private void handleMonsterClick() {
@@ -685,6 +777,44 @@ public class GamePanelEnhanced extends StackPane {
             damageNumbersContainer.getChildren().remove(companionDmg);
         });
         parallel.play();
+
+        // Animate companion icon - Attack shake and flash
+        animateCompanionAttack();
+    }
+
+    private void animateCompanionAttack() {
+        if (companionIconNode == null) return;
+
+        // Flash effect
+        FadeTransition flash = new FadeTransition(Duration.millis(100), companionIconNode);
+        flash.setFromValue(1.0);
+        flash.setToValue(0.3);
+        flash.setCycleCount(4);
+        flash.setAutoReverse(true);
+
+        // Shake effect
+        TranslateTransition shake1 = new TranslateTransition(Duration.millis(50), companionIconNode);
+        shake1.setByX(5);
+        TranslateTransition shake2 = new TranslateTransition(Duration.millis(50), companionIconNode);
+        shake2.setByX(-10);
+        TranslateTransition shake3 = new TranslateTransition(Duration.millis(50), companionIconNode);
+        shake3.setByX(5);
+
+        SequentialTransition shakeSequence = new SequentialTransition(shake1, shake2, shake3);
+        shakeSequence.setCycleCount(2);
+
+        // Scale pulse
+        ScaleTransition scalePulse = new ScaleTransition(Duration.millis(200), companionIconNode);
+        scalePulse.setFromX(1.0);
+        scalePulse.setFromY(1.0);
+        scalePulse.setToX(1.3);
+        scalePulse.setToY(1.3);
+        scalePulse.setCycleCount(2);
+        scalePulse.setAutoReverse(true);
+
+        // Play all animations together
+        ParallelTransition attackAnim = new ParallelTransition(flash, shakeSequence, scalePulse);
+        attackAnim.play();
     }
 
     private void updateComboDisplay() {
@@ -840,11 +970,14 @@ public class GamePanelEnhanced extends StackPane {
             particleSystem.createBurst(600, 300, Color.GOLD, 30, 5);
 
             gameManager.saveGame();
-            updateUI();
 
-            // FIX: Update cards AFTER purchase to refresh buttons
-            updateUpgradeCards();
-            updateFamiliarCards();
+            // Force immediate UI update in JavaFX thread
+            Platform.runLater(() -> {
+                updateUI();
+                // FIX: Update cards AFTER purchase to refresh buttons
+                updateUpgradeCards();
+                updateFamiliarCards();
+            });
         } else {
             showFeedbackText("Pas assez d'or !", Color.RED);
         }
@@ -860,12 +993,15 @@ public class GamePanelEnhanced extends StackPane {
             particleSystem.createExplosion(600, 400, Color.web(familiar.getRarity().getColorHex()));
 
             gameManager.saveGame();
-            updateUI();
 
-            // FIX: Update cards AFTER purchase to refresh buttons
-            updateUpgradeCards();
-            updateFamiliarCards();
-            updateFamiliarDisplay();
+            // Force immediate UI update in JavaFX thread
+            Platform.runLater(() -> {
+                updateUI();
+                // FIX: Update cards AFTER purchase to refresh buttons
+                updateUpgradeCards();
+                updateFamiliarCards();
+                updateFamiliarDisplay();
+            });
         } else {
             showFeedbackText("Pas assez d'or !", Color.RED);
         }
@@ -912,6 +1048,9 @@ public class GamePanelEnhanced extends StackPane {
 
         // Update familiar display
         updateFamiliarDisplay();
+
+        // Update companion display
+        updateCompanionDisplay();
 
         // Check death state
         if (gameManager.getCurrentState() == GameState.DEATH && !deathOverlay.isVisible()) {
